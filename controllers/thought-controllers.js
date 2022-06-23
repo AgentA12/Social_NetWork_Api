@@ -63,6 +63,49 @@ const thoughtControllers = {
       res.json(error);
     }
   },
+
+  // add reply to comment
+  addReply({ params, body }, res) {
+    Comment.findOneAndUpdate(
+      { _id: params.commentId },
+      { $push: { replies: body } },
+      { new: true, runValidators: true }
+    )
+      .then((dbPizzaData) => {
+        if (!dbPizzaData) {
+          res.status(404).json({ message: "No pizza found with this id!" });
+          return;
+        }
+        res.json(dbPizzaData);
+      })
+      .catch((err) => res.json(err));
+  },
+
+  async addReaction({ params, body }, res) {
+    try {
+      let newReaction = await Thought.findOneAndUpdate(
+        { _id: params.thoughtId },
+        { $push: { reactions: body } },
+        { new: true, runValidators: true }
+      );
+      res.json(newReaction);
+    } catch (error) {
+      res.json(error);
+    }
+  },
+
+  async deleteReaction({ params, body }, res) {
+    try {
+      let deletedReaction = await Thought.findOneAndUpdate(
+        { _id: params.thoughtId },
+        { $pull: { reactions: params.reactionID } },
+        { new: true, runValidators: true }
+      );
+      res.json(deletedReaction);
+    } catch (error) {
+      res.json(error);
+    }
+  },
 };
 
 module.exports = thoughtControllers;
