@@ -4,7 +4,10 @@ const userControllers = {
   //get all users
   async getAllUsers(req, res) {
     try {
-      let users = await User.find();
+      let users = await User.find()
+        .select("-__v")
+        .populate("thoughts")
+        .populate("friends");
       res.json(users);
     } catch (error) {
       res.json(error);
@@ -49,6 +52,32 @@ const userControllers = {
     try {
       let deletedUser = await User.findOneAndDelete({ _id: params.id });
       res.json(deletedUser);
+    } catch (error) {
+      res.json(error);
+    }
+  },
+
+  async addFriend({ body, params }, res) {
+    try {
+      let newFriend = await User.findOneAndUpdate(
+        { _id: params.userId },
+        { $push: { friends: params.friendId } },
+        { new: true, runValidators: true }
+      );
+      res.json(newFriend);
+    } catch (error) {
+      res.json(error);
+    }
+  },
+
+  async deleteFriend({ params }, res) {
+    try {
+      let deletedFriend = await User.findOneAndUpdate(
+        { _id: params.userId },
+        { $pull: { friends: params.friendId } },
+        { new: true, runValidators: true }
+      );
+      res.json(deletedFriend);
     } catch (error) {
       res.json(error);
     }

@@ -1,4 +1,4 @@
-const { Thought } = require("../models/index");
+const { Thought, User } = require("../models/index");
 
 const thoughtControllers = {
   //get all thoughts
@@ -25,7 +25,12 @@ const thoughtControllers = {
   async createThought({ params, body }, res) {
     try {
       let newThought = await Thought.create(body);
-      console.log(newThought);
+
+      let updatedUserThought = await User.findOneAndUpdate(
+        { _id: params.id },
+        { $push: { thoughts: newThought._id } },
+        { new: true }
+      );
       res.json(newThought);
     } catch (error) {
       res.json(error);
