@@ -1,8 +1,7 @@
 const date = require("date-and-time");
 
-function formatDate(d) {
-  //return new date.format(d, "HH:mm:ss, ddd, MMM DD YYYY");
-  return d
+function formatDate(createdAtDate) {
+  return date.format(createdAtDate, " ddd, MMM DD YYYY, HH:mm");
 }
 
 module.exports = formatDate;

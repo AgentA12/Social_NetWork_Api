@@ -1,4 +1,4 @@
-const { User } = require("../models/index");
+const { User, Thought } = require("../models/index");
 
 const userControllers = {
   //get all users
@@ -6,8 +6,14 @@ const userControllers = {
     try {
       let users = await User.find()
         .select("-__v")
-        .populate("thoughts")
-        .populate("friends");
+        .populate({
+          path: "thoughts",
+          select: "-__v",
+        })
+        .populate({
+          path: "friends",
+          select: "-__v",
+        });
       res.json(users);
     } catch (error) {
       res.json(error);
@@ -17,7 +23,10 @@ const userControllers = {
   //get one user by id
   async getSingleUser({ params }, res) {
     try {
-      let singleUser = await User.findOne({ _id: params.id });
+      let singleUser = await User.findOne({ _id: params.id })
+        .select("-__v")
+        .populate("thoughts")
+        .populate("friends");
       res.json(singleUser);
     } catch (error) {
       res.json(error);
@@ -51,6 +60,11 @@ const userControllers = {
   async deleteUserById({ params }, res) {
     try {
       let deletedUser = await User.findOneAndDelete({ _id: params.id });
+
+      let deletedThoughts = await Thought.deleteMany({
+        username: deletedUser.username,
+      });
+
       res.json(deletedUser);
     } catch (error) {
       res.json(error);

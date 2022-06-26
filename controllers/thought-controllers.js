@@ -1,10 +1,10 @@
 const { Thought, User } = require("../models/index");
-
+const date = require("date-and-time");
 const thoughtControllers = {
   //get all thoughts
   async getThoughts(req, res) {
     try {
-      let thoughts = await Thought.find();
+      let thoughts = await Thought.find().select("-__v").populate("reactions");
       res.json(thoughts);
     } catch (error) {
       res.json(error);
@@ -24,7 +24,12 @@ const thoughtControllers = {
   //add a thought
   async createThought({ params, body }, res) {
     try {
-      let newThought = await Thought.create(body);
+      let user = await User.findOne({ _id: params.id });
+
+      let newThought = await Thought.create({
+        thoughtText: body.thoughtText,
+        username: user.username,
+      });
 
       let updatedUserThought = await User.findOneAndUpdate(
         { _id: params.id },
@@ -64,23 +69,6 @@ const thoughtControllers = {
     }
   },
 
-  // add reply to comment
-  addReply({ params, body }, res) {
-    Comment.findOneAndUpdate(
-      { _id: params.commentId },
-      { $push: { replies: body } },
-      { new: true, runValidators: true }
-    )
-      .then((dbPizzaData) => {
-        if (!dbPizzaData) {
-          res.status(404).json({ message: "No pizza found with this id!" });
-          return;
-        }
-        res.json(dbPizzaData);
-      })
-      .catch((err) => res.json(err));
-  },
-
   async addReaction({ params, body }, res) {
     try {
       let newReaction = await Thought.findOneAndUpdate(
@@ -94,13 +82,15 @@ const thoughtControllers = {
     }
   },
 
-  async deleteReaction({ params, body }, res) {
+  async deleteReaction({ params }, res) {
+    console.log(params);
     try {
       let deletedReaction = await Thought.findOneAndUpdate(
         { _id: params.thoughtId },
-        { $pull: { reactions: params.reactionID } },
+        { $pull: { reactions: { reactionId: params.reactionId } } },
         { new: true, runValidators: true }
       );
+      console.log(deletedReaction);
       res.json(deletedReaction);
     } catch (error) {
       res.json(error);

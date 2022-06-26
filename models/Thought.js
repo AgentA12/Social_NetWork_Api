@@ -1,4 +1,5 @@
 const { Schema, Types, model } = require("mongoose");
+const date = require("date-and-time");
 const formatDate = require("../utils/formatDates");
 
 const reactionSchema = new Schema(
@@ -19,9 +20,10 @@ const reactionSchema = new Schema(
     createdAt: {
       type: Date,
       default: Date.now,
-      get: (d) => formatDate(d),
+      get: (createdAtVal) => formatDate(createdAtVal),
     },
   },
+  { _id: false },
   {
     toJSON: {
       getters: true,
