@@ -6,7 +6,7 @@ const userSchema = new Schema(
     username: {
       type: String,
       unique: true,
-      required: "A username is required",
+      required: "Username is required",
       trim: true,
     },
     email: {
@@ -15,7 +15,7 @@ const userSchema = new Schema(
       required: "Email address is required",
       match: [
         /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-        "Please fill a valid email address",
+        "Please enter a valid email address",
       ],
     },
     thoughts: [{ type: Schema.Types.ObjectId, ref: "Thought" }],

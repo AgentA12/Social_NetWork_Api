@@ -71,7 +71,7 @@ const userControllers = {
     }
   },
 
-  async addFriend({ body, params }, res) {
+  async addFriend({ params }, res) {
     try {
       let newFriend = await User.findOneAndUpdate(
         { _id: params.userId },

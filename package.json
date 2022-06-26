@@ -4,7 +4,9 @@
   "description": "A api based social network app using Mongoose",
   "main": "index.js",
   "scripts": {
-    "api": "nodemon server"
+    "start": "nodemon server",
+    "seeds": "node seeds/index.js"
+
   },
   "keywords": [],
   "author": "",
