@@ -14,7 +14,7 @@ const thoughtControllers = {
   //get a thought by id
   async getThoughtById({ params }, res) {
     try {
-      let singleThought = await Thought.findOne({ _id: params.id });
+      let singleThought = await Thought.findOne({ _id: params.thoughtId });
       res.json(singleThought);
     } catch (error) {
       res.json(error);
@@ -24,7 +24,7 @@ const thoughtControllers = {
   //add a thought
   async createThought({ params, body }, res) {
     try {
-      let user = await User.findOne({ _id: params.id });
+      let user = await User.findOne({ _id: params.userId });
 
       let newThought = await Thought.create({
         thoughtText: body.thoughtText,
@@ -32,7 +32,7 @@ const thoughtControllers = {
       });
 
       let updatedUserThought = await User.findOneAndUpdate(
-        { _id: params.id },
+        { _id: params.userId },
         { $push: { thoughts: newThought._id } },
         { new: true }
       );
@@ -46,7 +46,7 @@ const thoughtControllers = {
   async editThought({ params, body }, res) {
     try {
       let editedThought = await Thought.findOneAndUpdate(
-        { _id: params.id },
+        { _id: params.thoughtId },
         body,
         {
           new: true,
@@ -62,7 +62,7 @@ const thoughtControllers = {
   //remove a thought
   async deleteThought({ params }, res) {
     try {
-      let deletedThought = await Thought.findOneAndDelete({ _id: params.id });
+      let deletedThought = await Thought.findOneAndDelete({ _id: params.thoughtId });
       res.json(deletedThought);
     } catch (error) {
       res.json(error);
